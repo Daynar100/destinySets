@@ -17,6 +17,7 @@ const keys = {
   REQUEST_CACHE: 'cache',
   DATA_EXPLORER_VISITED: 'dataExplorerVisited',
   TEMP_FILTER_ITEM_WHITELIST: 'filterItemWhitelist',
+  ACCORDION_STATES: 'accordionStates',
 
   DESTINY_PROFILE: 'd2Profile2',
   DEBUG: 'debug',
@@ -253,6 +254,23 @@ export function getProfiles() {
 
 export function removeProfiles() {
   return localStorage.removeItem(keys.DESTINY_PROFILE);
+}
+
+export function getAccordionState(setKey) {
+  let accordionStates = get(keys.ACCORDION_STATES, null);
+  if (accordionStates === null || !accordionStates.hasOwnProperty(setKey)){
+    return null;
+  }
+  return accordionStates[setKey];
+}
+
+export function saveAccordionState(setKey, hidden) {
+  let accordionStates = get(keys.ACCORDION_STATES, null);
+  if (accordionStates === null){
+    accordionStates = {};
+  }
+  accordionStates[setKey] = hidden;
+  return save(keys.ACCORDION_STATES, accordionStates);
 }
 
 export function clearAll() {

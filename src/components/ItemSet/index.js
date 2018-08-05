@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import cx from 'classnames';
 
+import * as ls from 'app/lib/ls';
 import Item from 'app/components/NewItem';
 import MasterworkCatalyst from 'app/components/MasterworkCatalyst';
 import {
@@ -18,22 +19,39 @@ const ITEM_TYPE_COMPONENTS = {
   exoticCatalysts: MasterworkCatalyst
 };
 
-function ItemSet({
-  className,
-  inventory,
-  itemDefs,
-  setPopper,
-  setModal,
-  set,
-  objectiveInstances,
-  objectiveDefs
-}) {
-  const { name, noUi, description, sections, image } = set;
+class ItemSet extends Component{
+    constructor(props) {
+    super(props);
+
+    this.accordion = this.accordion.bind(this);
+    this.state = {
+      hidden: null
+    }
+  }
+  
+  accordion(){
+    const hidden = !this.state.hidden;
+    ls.saveAccordionState(this.props.set.name, hidden);
+    this.setState({ hidden });
+    
+    //trigger scroll event causing lazy load to load images that should now be in view
+    setTimeout(()=> window.dispatchEvent(new Event('scroll')), 200);
+  }
+  
+  componentDidMount(){
+    const hidden = ls.getAccordionState(this.props.set.name);
+    this.setState({ hidden });
+  }
+  
+  render() {
+    const { className, inventory, itemDefs, setPopper, setModal, set, objectiveInstances,
+  objectiveDefs } = this.props;
+    const { name, noUi, description, sections, image } = set;
   return (
     <div className={cx(className, styles.root, noUi && styles.noUi)}>
       <div className={styles.inner}>
         {!noUi && (
-          <div className={styles.header}>
+          <div className={styles.header} onClick={this.accordion}>
             {image && (
               <img
                 alt=""
@@ -42,12 +60,13 @@ function ItemSet({
               />
             )}
             <div className={styles.headerText}>
+            <div className={styles.accordionIcon}>{this.state.hidden ? '+' : '-'}</div>
               <h3 className={styles.title}>{name}</h3>
               {description && <p className={styles.desc}>{description}</p>}
             </div>
           </div>
         )}
-
+    <div className={styles.panel} style={{display: this.state.hidden ? "none" : "block"}}>
         {sections.map((section, index) => (
           <LazyLoad>
             <div key={index} className={styles.section}>
@@ -89,9 +108,10 @@ function ItemSet({
             </div>
           </LazyLoad>
         ))}
+        </div>
       </div>
     </div>
-  );
+  )}
 }
 
 const mapStateToProps = () => {
