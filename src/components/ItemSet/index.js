@@ -20,33 +20,26 @@ const ITEM_TYPE_COMPONENTS = {
 };
 
 class ItemSet extends Component{
-    constructor(props) {
+  constructor(props) {
     super(props);
-
     this.accordion = this.accordion.bind(this);
-    this.state = {
-      hidden: null
-    }
   }
   
   accordion(){
-    const hidden = !this.state.hidden;
-    ls.saveAccordionState(this.props.set.name, hidden);
-    this.setState({ hidden });
+    const key = window.location.pathname + '-' + this.props.set.name;
+    const hidden = !ls.getAccordionState(key);
+    ls.saveAccordionState(key,hidden);
+    this.forceUpdate();
     
     //trigger scroll event causing lazy load to load images that should now be in view
     setTimeout(()=> window.dispatchEvent(new Event('scroll')), 200);
-  }
-  
-  componentDidMount(){
-    const hidden = ls.getAccordionState(this.props.set.name);
-    this.setState({ hidden });
   }
   
   render() {
     const { className, inventory, itemDefs, setPopper, setModal, set, objectiveInstances,
   objectiveDefs } = this.props;
     const { name, noUi, description, sections, image } = set;
+    const hidden = ls.getAccordionState(window.location.pathname + '-' + this.props.set.name);
   return (
     <div className={cx(className, styles.root, noUi && styles.noUi)}>
       <div className={styles.inner}>
@@ -60,13 +53,13 @@ class ItemSet extends Component{
               />
             )}
             <div className={styles.headerText}>
-            <div className={styles.accordionIcon}>{this.state.hidden ? '+' : '-'}</div>
+            <div className={styles.accordionIcon}>{hidden ? '+' : '-'}</div>
               <h3 className={styles.title}>{name}</h3>
               {description && <p className={styles.desc}>{description}</p>}
             </div>
           </div>
         )}
-    <div className={styles.panel} style={{display: this.state.hidden ? "none" : "block"}}>
+    <div className={styles.panel} style={{maxHeight: hidden ? 0 : null}}>
         {sections.map((section, index) => (
           <LazyLoad>
             <div key={index} className={styles.section}>
