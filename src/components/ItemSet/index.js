@@ -1,3 +1,4 @@
+import * as ls from 'app/lib/ls';
 import React from 'react';
 import { connect } from 'react-redux';
 import cx from 'classnames';
@@ -8,14 +9,15 @@ import {
   makeSelectedItemDefsSelector,
   inventorySelector
 } from 'app/store/selectors';
+import { setHiddenItemSet as setHiddenItemSetAction } from 'app/store/reducer';
 import styles from './styles.styl';
 
-function ItemSet({ className, inventory, itemDefs, setPopper, setModal, set }) {
-  const { name, description, sections, image } = set;
+function ItemSet({ className, inventory, itemDefs, setPopper, setModal, set, setHiddenItemSet }) {
+  const { name, id, description, sections, image, hidden } = set;
   return (
     <div className={cx(className, styles.root)}>
       <div className={styles.inner}>
-        <div className={styles.header}>
+        <div className={styles.header} onClick={() => {ls.saveHiddenItemSets(id,!hidden); setHiddenItemSet(id, !hidden);}}>
           {image && (
             <img
               alt=""
@@ -29,7 +31,7 @@ function ItemSet({ className, inventory, itemDefs, setPopper, setModal, set }) {
                 <h3 className={styles.title}>{name}</h3>
               </div>
               <div className={styles.headerAccessory}>
-                <Icon name="minus-square" />
+                <Icon name={(hidden ? "plus" : "minus") + "-square"} />
               </div>
             </div>
             {description && <p className={styles.desc}>{description}</p>}
@@ -80,4 +82,8 @@ const mapStateToProps = () => {
   };
 };
 
-export default connect(mapStateToProps)(ItemSet);
+const mapDispatchToActions = {
+  setHiddenItemSet: setHiddenItemSetAction
+};
+
+export default connect(mapStateToProps, mapDispatchToActions)(ItemSet);

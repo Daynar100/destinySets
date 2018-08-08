@@ -16,6 +16,7 @@ const keys = {
   PROFILE_ERROR_REPORTED: 'profileErrorReported',
   REQUEST_CACHE: 'cache',
   TEMP_FILTER_ITEM_WHITELIST: 'filterItemWhitelist',
+  HIDDEN_ITEM_SETS: 'hiddenSets',
 
   DESTINY_PROFILE: 'd2Profile2',
   DEBUG: 'debug',
@@ -244,6 +245,16 @@ export function getProfiles() {
 
 export function removeProfiles() {
   return localStorage.removeItem(keys.DESTINY_PROFILE);
+}
+
+export function getHiddenItemSets() {
+  return get(keys.HIDDEN_ITEM_SETS, {});
+}
+
+export function saveHiddenItemSets(setId, hidden) {
+  let hiddenSets = getHiddenItemSets();
+  hiddenSets[setId] = hidden;
+  return save(keys.HIDDEN_ITEM_SETS, hiddenSets);
 }
 
 export function clearAll() {

@@ -76,6 +76,7 @@ function query(queryTerm, itemDefsArray) {
 }
 
 const filtersSelector = state => state.app.filters;
+const hiddenSetsSelector = state => state.app.hiddenSets;
 const propsSetDataSelector = (state, props) => props.route.setData;
 const itemDefsSelector = state => state.definitions.itemDefs;
 
@@ -130,20 +131,22 @@ const setDataSelector = createSelector(
 
 export const filteredSetDataSelector = createSelector(
   filtersSelector,
+  hiddenSetsSelector,
   setDataSelector,
   inventorySelector,
   itemDefsSelector,
-  (filters, setData, inventory, itemDefs) => {
+  (filters, hiddenSets, setData, inventory, itemDefs) => {
     const prevWhitelistedItems = ls.getTempFilterItemWhitelist();
-    const hiddenSets = ['WARMIND_TRIALS'];
+    //const hiddenSets = ['WARMIND_TRIALS'];
 
     // TODO: Can we memoize this or something to prevent making changes to sets that don't change?
     const result = immer({ setData }, draft => {
       draft.setData.forEach(group => {
         group.sets.forEach(set => {
+          set.hidden = hiddenSets.hasOwnProperty(set.id) && hiddenSets[set.id];
           if (
             !filters[FILTER_SHOW_HIDDEN_SETS] &&
-            hiddenSets.includes(set.id)
+            set.hidden
           ) {
             set.sections = [];
             return;
