@@ -11,7 +11,7 @@ import {
   objectiveInstancesSelector
 } from 'app/store/selectors';
 
-import LazyLoad from 'react-lazyload';
+import LazyLoad, { forceCheck } from 'react-lazyload';
 
 import styles from './styles.styl';
 
@@ -25,14 +25,14 @@ class ItemSet extends Component{
     this.accordion = this.accordion.bind(this);
   }
   
-  accordion(){
+  accordion = () => {
     const key = window.location.pathname + '-' + this.props.set.name;
     const hidden = !ls.getAccordionState(key);
     ls.saveAccordionState(key,hidden);
     this.forceUpdate();
     
-    //trigger scroll event causing lazy load to load images that should now be in view
-    setTimeout(()=> window.dispatchEvent(new Event('scroll')), 200);
+    //lazy load
+    forceCheck();
   }
   
   render() {

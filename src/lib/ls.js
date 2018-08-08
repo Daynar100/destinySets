@@ -257,18 +257,15 @@ export function removeProfiles() {
 }
 
 export function getAccordionState(setKey) {
-  let accordionStates = get(keys.ACCORDION_STATES, null);
-  if (accordionStates === null || !accordionStates.hasOwnProperty(setKey)){
+  let accordionStates = get(keys.ACCORDION_STATES, {});
+  if (!accordionStates.hasOwnProperty(setKey)){
     return null;
   }
   return accordionStates[setKey];
 }
 
 export function saveAccordionState(setKey, hidden) {
-  let accordionStates = get(keys.ACCORDION_STATES, null);
-  if (accordionStates === null){
-    accordionStates = {};
-  }
+  let accordionStates = get(keys.ACCORDION_STATES, {});
   accordionStates[setKey] = hidden;
   return save(keys.ACCORDION_STATES, accordionStates);
 }
