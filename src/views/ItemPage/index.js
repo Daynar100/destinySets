@@ -122,6 +122,9 @@ function ItemPage({
     item &&
     item.equippingBlock &&
     WEAPON_SLOT[item.equippingBlock.equipmentSlotTypeHash];
+    
+    if (typeof instances === 'undefined')
+      instances = {map: function(trash){}}
 
   return (
     <div className={s.root}>
